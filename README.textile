@@ -1,0 +1,25 @@
+h1. Spring Data Neo4j 2.1.0 test project
+
+h2. What is it about?
+
+p. This is a test project only. Some unit tests trying to reproduce a possible bug in
+*spring-data-neo4j-cross-store-2.1.0.RELEASE*.
+
+h2. Scenario
+
+p. There are 2 kinds of entities. A graph only and a partial entity. The graph-only one is related to the partial one:
+@_(graph)-[:PARTIAL_RELATED_TO_GRAPH]->(partial)@
+p. In order to have the same entity managed by two persistence backend, the cross-store support provided by spring-data-neo4j
+is used. But on version 2.1.0.RELEASE there seems o have a bug, when no @_@GraphProperty@ (non required) annotation
+is present on any property (on both graph-only and partial entities) the daa is neither persisted nor loaded.
+
+h2. How to run
+
+*Steps:*
+
+* 1. Run junit test @com.github.drochetti.springneo4j.test.CrossSoreTest.testCreateGraphEntity@ once to create some data (create data using cross store support on both databases).
+* 2. Run junit test @com.github.drochetti.springneo4j.test.GraphOnlyTest.testLoadGraphEntity()@ and it will *succeed*. *With @GraphProperty* and *no cross store* feature enable, all data is loaded as expected.
+* 3. Run junit test @com.github.drochetti.springneo4j.test.CrossSoreTest.testLoadGraphEntity()@ and it will *succeed*. *With @GraphProperty* and *cross store* feature enable, all data is loaded as expected.
+* 4. Now comment the @_@GrapProperty@ on line @14@ of @com.github.drochetti.springneo4j.model.GraphEntity@
+* 5. Run test #2 again. It will *succeed*. *Without @GraphProperty* and *no cross store* feature enable, all data is loaded as expected. 
+* 6. Run test #3 again. It will *fail*. *Without @GraphProperty* and *cross store* feature enable,  not annotated fields are neither loaded nor persisted. 
